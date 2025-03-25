@@ -1,103 +1,134 @@
-import Image from "next/image";
+"use client"; // This is a client component 
+import { useEffect, useState } from 'react';
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              app/page.js
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  const [startDate, setStartDate] = useState(null);
+  const [daysSince, setDaysSince] = useState(0);
+  const [trucks,setTrucks] = useState([]);
+  const [link, setLink] = useState('');
+  const [links, setLinks] = useState([]);
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+  // useEffect(() => {
+  //   const savedDate = localStorage.getItem('startDate');
+  //   const savedLinks = JSON.parse(localStorage.getItem('links')) || [];
+
+  //   if (savedDate) {
+  //     setStartDate(new Date(savedDate));
+  //   }
+  //   setLinks(savedLinks);
+  // }, []);
+
+  useEffect(() => {
+    if (startDate) {
+      const now = new Date();
+      const diffTime = Math.floor((now - new Date(startDate)) / (1000 * 60 * 60 * 24));
+      setDaysSince(diffTime);
+    }
+  }, [startDate]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const res = await fetch('/api/users');
+      const data = await res.json();
+      var datesArr = [];
+      var linksArr = [];
+
+      datesArr   = data.users.map(user => user.date);
+      linksArr  = data.users.map(user => user.linkto);
+      // console.log(`this is 1 ${data.users[0]}`);
+      setStartDate(  new Date( data.users[0].date))
+      var temp  = datesArr.map((date,index)=>({
+        datestr: formatDateTo(date),
+        linkto : linksArr[index]
+      }));
+      
+      setTrucks(temp);
+      // console.log(temp);
+      
+    };
+
+    fetchData();
+  },[] );
+
+  function formatDateTo(dateString) {
+    var date = new Date(dateString);
+    // console.log();  // "Friday, March 21, 2025"
+      return date.toLocaleDateString('en-US', { 
+        weekday: 'long', 
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric' 
+      });
+  } 
+
+  // Long format
+  
+  
+
+  const handleReset = () => {
+    if (!link) return;
+    const now = new Date();
+    setStartDate(now);
+    setDaysSince(0);
+    const newLinks = [link, ...links];
+    setLinks(newLinks);
+    localStorage.setItem('startDate', now.toISOString());
+    localStorage.setItem('links', JSON.stringify(newLinks));
+    setLink('');
+  };
+
+  const incrementDays = () => {
+    setDaysSince(daysSince + 1);
+  };
+
+  return (
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 p-6">
+      <div className="bg-white shadow-lg rounded-lg p-8 w-full max-w-md text-center">
+        <h1 className="text-4xl font-bold">{daysSince} Days Since</h1>
+        <div className="mt-6">
+          <input
+            type="text"
+            placeholder="Enter a link"
+            value={link}
+            onChange={(e) => setLink(e.target.value)}
+            className="border rounded-lg p-2 w-full"
+          />
+          <button
+            onClick={handleReset}
+            className="mt-4 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+            Reset to Zero
+          </button>
+          <button
+            onClick={incrementDays}
+            className="mt-4 ml-4 bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600"
           >
-            Read our docs
-          </a>
+            Increment Days
+          </button>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+
+        {/* {trucks.length > 0 && (
+          <div className="mt-8">
+            <h2 className="text-lg font-semibold">Recent Links:</h2>
+            <ul className="mt-4 space-y-2">
+              {trucks.map((l, index) => (
+                <li key={index} className="text-blue-500 underline">
+                  <a href={l} target="_blank" rel="noopener noreferrer">{l}</a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )} */}
+            <div>
+     
+              {trucks.map((item, index) => (
+                <tr key={index} className="text-center">
+                  <td className="p-2">{item.datestr}</td>
+                  <td className="p-2" style= {{color: "blue", fontSize: "16px"}} ><a href= {item.linkto}>link</a></td>
+                </tr>
+              ))}
+            </div>
+      </div>
     </div>
   );
 }
