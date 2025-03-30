@@ -6,6 +6,7 @@ export default function Home() {
   const [daysSince, setDaysSince] = useState(0);
   const [trucks,setTrucks] = useState([]);
   const [link, setLink] = useState('');
+  const [datelink, setDatelink] = useState(new Date())
   const [links, setLinks] = useState([]);
 
   // useEffect(() => {
@@ -65,17 +66,42 @@ export default function Home() {
   
   
 
-  const handleReset = () => {
-    if (!link) return;
-    const now = new Date();
-    setStartDate(now);
-    setDaysSince(0);
-    const newLinks = [link, ...links];
-    setLinks(newLinks);
-    localStorage.setItem('startDate', now.toISOString());
-    localStorage.setItem('links', JSON.stringify(newLinks));
-    setLink('');
+  // const handleReset = () => {
+  //   if (!link) return;
+  //   const now = new Date();
+  //   setStartDate(now);
+  //   setDaysSince(0);
+  //   const newLinks = [link, ...links];
+  //   setLinks(newLinks);
+  //   localStorage.setItem('startDate', now.toISOString());
+  //   localStorage.setItem('links', JSON.stringify(newLinks));
+  //   setLink('');
+  // };
+  const handleReset = async (e) => {
+    e.preventDefault();
+
+    const newData = { datelink, link };
+    try {
+      const response = await fetch("/api/users", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newData),
+      });
+      if (response.ok) {
+        await fetchData();  // 🔥 Re-fetch data immediately after adding new entry
+         setLink('');
+         setDatelink(new Date())
+      } else {
+        console.error("Failed to add data");
+      }
+    }catch (error) {
+      console.error("Error submitting data:", error);
+    }
+
   };
+
+  
+
 
   const incrementDays = () => {
     setDaysSince(daysSince + 1);
@@ -91,6 +117,13 @@ export default function Home() {
             placeholder="Enter a link"
             value={link}
             onChange={(e) => setLink(e.target.value)}
+            className="border rounded-lg p-2 w-full"
+          />
+          <input
+            type="date"
+            placeholder="Enter the Date of the incident"
+            value={datelink}
+            onChange={(e) => setDatelink(e.target.value)}
             className="border rounded-lg p-2 w-full"
           />
           <button
@@ -124,7 +157,7 @@ export default function Home() {
               {trucks.map((item, index) => (
                 <tr key={index} className="text-center">
                   <td className="p-2">{item.datestr}</td>
-                  <td className="p-2" style= {{color: "blue", fontSize: "16px"}} ><a href= {item.linkto}>link</a></td>
+                  <td className="p-2" target="_blank" style= {{color: "blue", fontSize: "16px"}} ><a href= {item.linkto}>link</a></td>
                 </tr>
               ))}
             </div>
