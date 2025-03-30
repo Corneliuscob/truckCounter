@@ -4,7 +4,7 @@ services:
   days-since-app:
     build: .
     ports:
-      - "8116:8116"
+      - "8117:8117"
     volumes:
       - .:/app
       - /app/node_modules
