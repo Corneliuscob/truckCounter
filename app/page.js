@@ -17,13 +17,13 @@ export default function Home() {
 
 
   const fetchData = async () => {
-    const res = await fetch('/api/users');
+    const res = await fetch('/api/trucks');
     const data = await res.json();
     var datesArr = [];
     var linksArr = [];
 
-    datesArr   = data.users.map(user => user.date);
-    linksArr  = data.users.map(user => user.linkto);
+    datesArr   = data.trucks.map(info => info.date);
+    linksArr  = data.trucks.map(info => info.linkto);
     // console.log(`this is 1 ${data.users[0]}`);
 
     //creates an object; temp  that maps dates and links to
@@ -72,7 +72,7 @@ export default function Home() {
 
     const newData = { datelink, link };
     try {
-      const response = await fetch("/api/users", {
+      const response = await fetch("/api/trucks", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(newData),
