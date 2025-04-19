@@ -15,7 +15,8 @@ export default function Home() {
   useEffect(() => {
     if (startDate) {
       const now = new Date();
-      const diffTime = Math.floor((now - new Date(startDate)) / (1000 * 60 * 60 * 24));
+      const utcMinus8 = new Date(now.getTime() - 8 * 60 * 60 * 1000)
+      const diffTime = Math.floor((utcMinus8 - new Date(startDate)) / (1000 * 60 * 60 * 24));
       setDaysSince(diffTime);
     }
   }, [startDate]);
