@@ -6,7 +6,7 @@ export default function Home() {
   const [daysSince, setDaysSince] = useState(0);
   const [trucks,setTrucks] = useState([]);
   const [link, setLink] = useState('');
-  const [datelink, setDatelink] = useState(new Date())
+  const [datelink, setDatelink] = useState('')
   const [links, setLinks] = useState([]);
   const [error,setError] = useState(null);
 
@@ -31,31 +31,33 @@ export default function Home() {
 
   //calls the database api takes the dates  and linksto the articles and maps to arrays each.
   useEffect(() => {
-    const fetchData = async () => {
-      const res = await fetch('/api/users');
-      const data = await res.json();
-      var datesArr = [];
-      var linksArr = [];
-
-      datesArr   = data.users.map(user => user.date);
-      linksArr  = data.users.map(user => user.linkto);
-      // console.log(`this is 1 ${data.users[0]}`);
-
-      //creates an object; temp  that maps dates and links to
-      setStartDate(  new Date( data.users[0].date))
-      var temp  = datesArr.map((date,index)=>({
-        datestr: formatDateTo(date),
-        linkto : linksArr[index]
-      }));
-      
-      setTrucks(temp);
-      // console.log(temp);
-      
-    };
+    
 
     fetchData();
   },[] );
 
+
+  const fetchData = async () => {
+    const res = await fetch('/api/users');
+    const data = await res.json();
+    var datesArr = [];
+    var linksArr = [];
+
+    datesArr   = data.users.map(user => user.date);
+    linksArr  = data.users.map(user => user.linkto);
+    // console.log(`this is 1 ${data.users[0]}`);
+
+    //creates an object; temp  that maps dates and links to
+    setStartDate(  new Date( data.users[0].date))
+    var temp  = datesArr.map((date,index)=>({
+      datestr: formatDateTo(date),
+      linkto : linksArr[index]
+    }));
+    
+    setTrucks(temp);
+    // console.log(temp);
+    
+  };
   function formatDateTo(dateString) {
     var date = new Date(dateString);
     // console.log();  // "Friday, March 21, 2025"
@@ -69,21 +71,7 @@ export default function Home() {
       });
   } 
 
-  // Long format
-  
-  
-
-  // const handleReset = () => {
-  //   if (!link) return;
-  //   const now = new Date();
-  //   setStartDate(now);
-  //   setDaysSince(0);
-  //   const newLinks = [link, ...links];
-  //   setLinks(newLinks);
-  //   localStorage.setItem('startDate', now.toISOString());
-  //   localStorage.setItem('links', JSON.stringify(newLinks));
-  //   setLink('');
-  // };
+ 
   const handleReset = async (e) => {
     e.preventDefault();
 
@@ -110,12 +98,13 @@ export default function Home() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(newData),
       });
-      if (response.ok) {
-        await fetchData();  // 🔥 Re-fetch data immediately after adding new entry
+
+      if ( response.ok) {
+         await fetchData();  // 🔥 Re-fetch data immediately after adding new entry
          setLink('');
-         setDatelink(new Date())
+         setDatelink('')
       } else {
-        console.error("Failed to add data");
+        console.error("Failed to add data:",response);
       }
     }catch (error) {
       console.error("Error submitting data:", error);
@@ -167,19 +156,7 @@ export default function Home() {
           )}
         </div>
 
-        {/* {trucks.length > 0 && (
-          <div className="mt-8">
-            <h2 className="text-lg font-semibold">Recent Links:</h2>
-            <ul className="mt-4 space-y-2">
-              {trucks.map((l, index) => (
-                <li key={index} className="text-blue-500 underline">
-                  <a href={l} target="_blank" rel="noopener noreferrer">{l}</a>
-                </li>
-              ))}
-            </ul>
-          </div>
-        )} */}
-
+        
     <div>
         <table>
           <tbody>
@@ -196,3 +173,35 @@ export default function Home() {
     </div>
   );
 }
+
+
+ // old way with anarray where i destructure it with local data
+  
+  
+
+  // const handleReset = () => {
+  //   if (!link) return;
+  //   const now = new Date();
+  //   setStartDate(now);
+  //   setDaysSince(0);
+  //   const newLinks = [link, ...links];
+  //   setLinks(newLinks);
+  //   localStorage.setItem('startDate', now.toISOString());
+  //   localStorage.setItem('links', JSON.stringify(newLinks));
+  //   setLink('');
+  // };
+
+
+  //old method where trucks was one simple item 
+  // {/* {trucks.length > 0 && (
+  //         <div className="mt-8">
+  //           <h2 className="text-lg font-semibold">Recent Links:</h2>
+  //           <ul className="mt-4 space-y-2">
+  //             {trucks.map((l, index) => (
+  //               <li key={index} className="text-blue-500 underline">
+  //                 <a href={l} target="_blank" rel="noopener noreferrer">{l}</a>
+  //               </li>
+  //             ))}
+  //           </ul>
+  //         </div>
+  //       )} */}

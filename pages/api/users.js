@@ -10,19 +10,17 @@ export default async function handler(req, res) {
     } catch (error) {
       console.error(error);
       res.status(500).json({ message: 'Database error', error });
-    }
-  } else {
-    res.setHeader('Allow', ['GET']);
-    res.status(405).end(`Method ${req.method} Not Allowed`);
-  }
+    } 
+  } 
 
 
-  if (req.method === "POST") {
+  
+  if (req.method === 'POST') {
     // Insert data into MySQL
     const { datelink, link } = req.body;
 
-    if (!datelink && !link) {
-      return res.status(400).json({ message: "Missing date or truck hit" });
+    if (!datelink || !link) {
+      res.status(400).json({ message: "Missing date or truck hit" });
     }
 
     try {
@@ -30,11 +28,14 @@ export default async function handler(req, res) {
       const values = [datelink, link];
 
       await pool.query(query, values);
-      res.status(201).json({ message: "Data added successfully" });
+      res.status(200).json({ message: "Data added successfully" });
     } catch (error) {
       console.error("Error inserting data:", error);
       res.status(500).json({ message: "Failed to insert data" });
     }
   }
+  // Fallback for unsupported methods
+  res.setHeader('Allow', ['GET', 'POST']);
+  res.status(405).end(`Method ${req.method} Not Allowed`);
 
 }
