@@ -1,12 +1,10 @@
-version: '3.8'
-
 services:
   days-since-app:
     build: .
     ports:
       - "8117:8117"
     volumes:
-      - .:/app
       - /app/node_modules
+      - .:/app
     environment:
       - NODE_ENV=production
