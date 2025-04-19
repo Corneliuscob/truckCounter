@@ -48,7 +48,7 @@ export default function Home() {
     // console.log(`this is 1 ${data.users[0]}`);
 
     //creates an object; temp  that maps dates and links to
-    setStartDate(  new Date( data.users[0].date))
+    setStartDate(  new Date( data.trucks[0].date))
     var temp  = datesArr.map((date,index)=>({
       datestr: formatDateTo(date),
       linkto : linksArr[index]
