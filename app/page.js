@@ -8,6 +8,7 @@ export default function Home() {
   const [link, setLink] = useState('');
   const [datelink, setDatelink] = useState(new Date())
   const [links, setLinks] = useState([]);
+  const [error,setError] = useState(null);
 
   // useEffect(() => {
   //   const savedDate = localStorage.getItem('startDate');
@@ -18,6 +19,7 @@ export default function Home() {
   //   }
   //   setLinks(savedLinks);
   // }, []);
+//this should be deprecated 
 
   useEffect(() => {
     if (startDate) {
@@ -27,6 +29,7 @@ export default function Home() {
     }
   }, [startDate]);
 
+  //calls the database api takes the dates  and linksto the articles and maps to arrays each.
   useEffect(() => {
     const fetchData = async () => {
       const res = await fetch('/api/users');
@@ -37,6 +40,8 @@ export default function Home() {
       datesArr   = data.users.map(user => user.date);
       linksArr  = data.users.map(user => user.linkto);
       // console.log(`this is 1 ${data.users[0]}`);
+
+      //creates an object; temp  that maps dates and links to
       setStartDate(  new Date( data.users[0].date))
       var temp  = datesArr.map((date,index)=>({
         datestr: formatDateTo(date),
@@ -58,7 +63,9 @@ export default function Home() {
         weekday: 'long', 
         year: 'numeric', 
         month: 'long', 
-        day: 'numeric' 
+        day: 'numeric',
+        timeZone: 'America/Los_Angeles'
+
       });
   } 
 
@@ -79,6 +86,22 @@ export default function Home() {
   // };
   const handleReset = async (e) => {
     e.preventDefault();
+
+
+    if (!datelink) {
+      setError('Please enter a date first!');
+      return
+    }    else{
+      setError(null);
+    }
+    if (!link) {
+      setError('Please enter a link first!');
+      return
+    }    else{
+      setError(null);
+    }
+
+
 
     const newData = { datelink, link };
     try {
@@ -138,6 +161,10 @@ export default function Home() {
           >
             Increment Days
           </button>
+
+          {error && (
+            <p className="text-red-500 mt-2">{error}</p>
+          )}
         </div>
 
         {/* {trucks.length > 0 && (
@@ -152,14 +179,18 @@ export default function Home() {
             </ul>
           </div>
         )} */}
-            <div>
-     
+
+    <div>
+        <table>
+          <tbody>
               {trucks.map((item, index) => (
                 <tr key={index} className="text-center">
                   <td className="p-2">{item.datestr}</td>
-                  <td className="p-2" target="_blank" style= {{color: "blue", fontSize: "16px"}} ><a href= {item.linkto}>link</a></td>
+                  <td className="p-2"  style= {{color: "blue", fontSize: "16px"}} ><a target="_blank" href= {item.linkto}>link</a></td>
                 </tr>
               ))}
+          </tbody>
+        </table>
             </div>
       </div>
     </div>
