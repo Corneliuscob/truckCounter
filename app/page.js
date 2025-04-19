@@ -10,17 +10,8 @@ export default function Home() {
   const [links, setLinks] = useState([]);
   const [error,setError] = useState(null);
 
-  // useEffect(() => {
-  //   const savedDate = localStorage.getItem('startDate');
-  //   const savedLinks = JSON.parse(localStorage.getItem('links')) || [];
 
-  //   if (savedDate) {
-  //     setStartDate(new Date(savedDate));
-  //   }
-  //   setLinks(savedLinks);
-  // }, []);
-//this should be deprecated 
-
+//this code calcultes the days since hte last truck hit the overass and uses he seState of teh fetch database call 
   useEffect(() => {
     if (startDate) {
       const now = new Date();
@@ -175,33 +166,3 @@ export default function Home() {
 }
 
 
- // old way with anarray where i destructure it with local data
-  
-  
-
-  // const handleReset = () => {
-  //   if (!link) return;
-  //   const now = new Date();
-  //   setStartDate(now);
-  //   setDaysSince(0);
-  //   const newLinks = [link, ...links];
-  //   setLinks(newLinks);
-  //   localStorage.setItem('startDate', now.toISOString());
-  //   localStorage.setItem('links', JSON.stringify(newLinks));
-  //   setLink('');
-  // };
-
-
-  //old method where trucks was one simple item 
-  // {/* {trucks.length > 0 && (
-  //         <div className="mt-8">
-  //           <h2 className="text-lg font-semibold">Recent Links:</h2>
-  //           <ul className="mt-4 space-y-2">
-  //             {trucks.map((l, index) => (
-  //               <li key={index} className="text-blue-500 underline">
-  //                 <a href={l} target="_blank" rel="noopener noreferrer">{l}</a>
-  //               </li>
-  //             ))}
-  //           </ul>
-  //         </div>
-  //       )} */}
