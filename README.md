@@ -22,7 +22,7 @@ This project uses [`next/font`](https://nextjs.org/docs/app/building-your-applic
 
 ## Learn More
 docker build -t days-since-app .
-docker run -p 8117:8117 days-since-app
+docker run -d --name days-since -p 8117:8117 days-since-app 
 
 
 docker compose up --build
