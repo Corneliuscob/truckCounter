@@ -3,8 +3,11 @@ services:
     build: .
     ports:
       - "8117:8117"
-    volumes:
-      - /app/node_modules
-      - .:/app
+    #comment out the below for not prod as they ruin the next repo?
+    # ./:app is overwriting everything in the container 
+    # (including the clean .next directory from the image) with your host's version — which was likely built using Turbopack via next dev.
+    # volumes:
+    #   - /app/node_modules
+    #   - .:/app
     environment:
       - NODE_ENV=production
