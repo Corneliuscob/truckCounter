@@ -1,7 +1,10 @@
-import { query,pool } from '../../lib/db';
+import { query,pool,initDB } from '../../lib/db';
 
 
 export default async function handler(req, res) {
+  await initDB();
+
+
   if (req.method === 'GET') {
     try {
       const results = await query('SELECT * FROM TruckHits order by `date` desc;', []);
