@@ -19,6 +19,7 @@ export default async function handler(req, res) {
 
   
   if (req.method === 'POST') {
+
     // Insert data into MySQL
     const { datelink, link } = req.body;
 
@@ -35,6 +36,24 @@ export default async function handler(req, res) {
     } catch (error) {
       console.error("Error inserting data:", error);
       res.status(500).json({ message: "Failed to insert data" });
+    }
+  }
+
+
+  if (req.method === 'DELETE') {
+    const { id } = req.body;
+  
+    if (!id) {
+      return res.status(400).json({ message: "Missing ID to delete" });
+    }
+  
+    try {
+      const deleteQuery = "DELETE FROM TruckHits WHERE id = ?";
+      await pool.query(deleteQuery, [id]);
+      return res.status(200).json({ message: "Deleted successfully" });
+    } catch (error) {
+      console.error("Error deleting data:", error);
+      return res.status(500).json({ message: "Failed to delete data" });
     }
   }
   // Fallback for unsupported methods

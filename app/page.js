@@ -34,16 +34,20 @@ export default function Home() {
     const data = await res.json();
     var datesArr = [];
     var linksArr = [];
+    var idArr = [];
 
     datesArr   = data.trucks.map(info => info.date);
     linksArr  = data.trucks.map(info => info.linkto);
+    idArr  = data.trucks.map(info => info.id);
     // console.log(`this is 1 ${data.users[0]}`);
 
     //creates an object; temp  that maps dates and links to
     setStartDate(  new Date( data.trucks[0].date))
+    
     var temp  = datesArr.map((date,index)=>({
       datestr: formatDateTo(date),
-      linkto : linksArr[index]
+      linkto : linksArr[index],
+      id: idArr[index]
     }));
     
     setTrucks(temp);
@@ -104,7 +108,31 @@ export default function Home() {
 
   };
 
+  const handleDelete = async (id) => {
+    const confirmed = window.confirm("Are you sure you want to delete this entry?")
+    if (!confirmed) return
   
+    try {
+      const res = await fetch('/api/trucks', {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ id })
+      })
+  
+      if (res.ok) {
+        // Remove the item from local state
+        setTrucks((prev) => prev.filter((item) => item.id !== id))
+      } else {
+        console.error("Failed to delete:", await res.text())
+        alert("Error deleting item.")
+      }
+    } catch (err) {
+      console.error(err)
+      alert("Something went wrong.")
+    }
+  }
 
 
   const incrementDays = () => {
@@ -156,6 +184,7 @@ export default function Home() {
                 <tr key={index} className="text-center">
                   <td className="p-2">{item.datestr}</td>
                   <td className="p-2"  style= {{color: "blue", fontSize: "16px"}} ><a target="_blank" href= {item.linkto}>link</a></td>
+                  <td className="p-2"> <button onClick={() => handleDelete(item.id)}className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"> Delete </button> </td>
                 </tr>
               ))}
           </tbody>
